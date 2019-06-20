@@ -3,8 +3,9 @@ import time
 import os
 
 import web.model.model_ubh.data_path as data_path
-import web.model.model_ubh.myutil as myutil
+import web.model.myutil as myutil
 import web.model.path_util as path_util
+from web.model.myutil import factor_data_dict
 
 class Record:
     def __init__(self, user_id, item_id, buy_time):
@@ -79,14 +80,24 @@ def get_user_bought_history(rebuild=True):
 
 
 class UserBoughtHistory:
+    factor = 0.02
+
     def __init__(self):
         self.data = get_user_bought_history(rebuild=False)
 
     def get_match_dict(self, item_id):
         if item_id in self.data:
-            return self.data[item_id]
+            result = self.data[item_id]
+            result = factor_data_dict(result, UserBoughtHistory.factor)
+            threshold = UserBoughtHistory.factor * 2
+            for k in list(result.keys()):
+                if result[k] < threshold:
+                    result.pop(k)
+
+            return result
         else:
             return {}
+
 
 
 if __name__ == "__main__":

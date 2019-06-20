@@ -27,6 +27,9 @@ class ItemSim():
         with open(path_dict_term_cat_items, 'rb') as f:
             self.__dict_term_cat_items = pickle.load(f)
 
+    def get_cat(self, item_id):
+        return self.__dict_item_cat[item_id]
+
     def get_sim_items(self, item_id):
         query = []
         docs = {}
@@ -86,7 +89,7 @@ class ItemSim():
     def get_match_items(self, item_id):
         dict_total_item_match = {}
         if item_id not in self.__dict_item_collids:
-            return []
+            return {}
 
         for collid in self.__dict_item_collids[item_id]:
             for item_match in self.__dict_collid_items[collid]:
@@ -97,9 +100,13 @@ class ItemSim():
                 sim = self.__sim_all[item_match]
                 for di in sim:
                     if di in dict_total_item_match:
-                        dict_total_item_match[di] = max(sim[id], dict_total_item_match[id])
+                        dict_total_item_match[di] = max(sim[di], dict_total_item_match[di])
                     else:
                         dict_total_item_match[di] = sim[di]
+        return dict_total_item_match
+
+    def get_match_items_sorted_list(self, item_id):
+        dict_total_item_match = self.get_match_items(item_id)
         dict_total_item_match = sorted(dict_total_item_match.items(), key=lambda d: d[1], reverse=True)
         return dict_total_item_match
 
