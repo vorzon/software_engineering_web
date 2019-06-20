@@ -66,3 +66,8 @@ def dict2list_sorted_by_value(input:dict):
     list_from_input = list((k,v) for k,v in input.items())
     list_from_input.sort(key=lambda x:x[1], reverse=True)
     return list_from_input
+
+def dict_filter(func, data:dict):
+    for k in list(data.keys()):
+        if not func(data[k]):
+            data.pop(k)

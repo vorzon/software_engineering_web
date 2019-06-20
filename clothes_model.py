@@ -1,12 +1,13 @@
 import web.model.model_tfidf.getSim as tfidf
 from web.model.model_ubh.model_same_time import UserBoughtHistory
 from web.model.myutil import func_timer, factor_data_dict, update_data_dict, \
-    update_data_dict_with_factor, dict2list_sorted_by_value
+    update_data_dict_with_factor, dict2list_sorted_by_value, dict_filter
 
 
 class MergedModel:
 
-    limit_num = 10
+    LimitNum = 10
+    SimilarThreshold = 0.6
 
     def __init__(self):
         self.model_ubh = UserBoughtHistory()
@@ -34,13 +35,15 @@ class MergedModel:
     @func_timer
     def __get_normal_result(self, item_id):
         result = self.model_tfidf.get_match_items(item_id)
+        dict_filter(lambda x: x > MergedModel.SimilarThreshold, result)
+
         result_ubh = self.model_ubh.get_match_dict(item_id)
         update_data_dict(result, result_ubh)
         return result
 
     def get_result(self, item_id):
         query_input = {item_id: 1.0}
-        limit_num = MergedModel.limit_num
+        limit_num = MergedModel.LimitNum
 
         input_sim_dict = self.__get_sim_items(item_id)
         input_sim_list = dict2list_sorted_by_value(input_sim_dict)[:limit_num]
