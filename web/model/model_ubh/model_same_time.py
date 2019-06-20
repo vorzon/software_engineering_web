@@ -4,6 +4,7 @@ import os
 
 import web.model.model_ubh.data_path as data_path
 import web.model.model_ubh.myutil as myutil
+import web.model.path_util as path_util
 
 class Record:
     def __init__(self, user_id, item_id, buy_time):
@@ -27,13 +28,16 @@ def add_pair(final_result:dict, item1, item2):
     __add_similar_pair(final_result, item1, item2)
     __add_similar_pair(final_result, item2, item1)
 
-item_same_day_dict_path = './item_same_day.pkl'
+item_same_day_dict_path = path_util.make_real_path('item_same_day.pkl')
 
 
 @myutil.func_timer
 def get_user_bought_history(rebuild=True):
     if not rebuild and myutil.file_exist(item_same_day_dict_path):
+        print("use the model built before")
         return myutil.load_from_file(item_same_day_dict_path)
+
+    print("building new model of user bought history")
 
     limit = 10000000
     num_deal = 0

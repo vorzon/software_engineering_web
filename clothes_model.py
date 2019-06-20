@@ -12,6 +12,4 @@ if __name__ == '__main__':
     model_tfidf = tfidf.model_tfidf
     model_tfidf_res = model_tfidf.get_match_items(item_id)
 
-
-
     print("tf-idf result {}:{}".format(item_id, model_tfidf_res))

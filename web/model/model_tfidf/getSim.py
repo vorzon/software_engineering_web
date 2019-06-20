@@ -3,6 +3,7 @@ import numpy as np
 import math
 import re
 import pickle
+import web.model.path_util as path_util
 
 class ItemSim():
     def __init__(self, path_dict_collid_items, path_dict_item_collids, path_dict_item_cat, path_dict_item_terms, path_dict_cat_items, path_dict_term_cat_items):
@@ -26,7 +27,7 @@ class ItemSim():
         with open(path_dict_term_cat_items, 'rb') as f:
             self.__dict_term_cat_items = pickle.load(f)
 
-    def __get_sim_items(self, item_id):
+    def get_sim_items(self, item_id):
         query = []
         docs = {}
         sim = {}
@@ -92,7 +93,7 @@ class ItemSim():
                 if (item_match in self.__dict_item_cat and
                             self.__dict_item_cat[item_match] == self.__dict_item_cat[item_id]):
                     continue
-                self.__sim_all[item_match], self.__sim_low[item_match] = self.__get_sim_items(item_match)
+                self.__sim_all[item_match], self.__sim_low[item_match] = self.get_sim_items(item_match)
                 sim = self.__sim_all[item_match]
                 for di in sim:
                     if di in dict_total_item_match:
@@ -238,12 +239,13 @@ def create_dict_clothmatch(path, path_dict_item_collids, path_dict_collid_items)
             pickle.dump(dict_collid_items, f)
     #return dict_item_collids, dict_collid_items
 
-path_dict_item_collids = "./index_item_collids.pk"
-path_dict_cat_items = "./index_cat_items.pk"
-path_dict_term_cat_items = "./index_term_cat_items.pk"
-path_dict_item_terms = "./index_item_terms.pk"
-path_dict_collid_items = "./index_collid_items.pk"
-path_dict_item_cat = "./index_item_cat.pk"
+
+path_dict_item_collids = path_util.make_real_path("index_item_collids.pk")
+path_dict_cat_items = path_util.make_real_path("index_cat_items.pk")
+path_dict_term_cat_items = path_util.make_real_path("index_term_cat_items.pk")
+path_dict_item_terms = path_util.make_real_path("index_item_terms.pk")
+path_dict_collid_items = path_util.make_real_path("index_collid_items.pk")
+path_dict_item_cat = path_util.make_real_path("index_item_cat.pk")
 
 model_tfidf = ItemSim(path_dict_collid_items, path_dict_item_collids, path_dict_item_cat,
                       path_dict_item_terms, path_dict_cat_items, path_dict_term_cat_items)
@@ -252,13 +254,9 @@ if __name__ == "__main__":
     items_path = "./dim_items.txt"
     clothmatch_path = "./dim_fashion_matchsets.txt"
 
-
     #create_dict_clothmatch(clothmatch_path, path_dict_item_collids, path_dict_collid_items)
     #create_dict_itemfile(items_path, path_dict_item_cat, path_dict_item_terms, path_dict_cat_items, path_dict_term_cat_items,)
-
-    item_sim = ItemSim(path_dict_collid_items, path_dict_item_collids, path_dict_item_cat,
-                       path_dict_item_terms, path_dict_cat_items, path_dict_term_cat_items)
-    res = item_sim.get_match_items("2741506")
+    res = model_tfidf.get_match_items("2741506")
     print(res)
 
     # path_save = "./index.pkl"
