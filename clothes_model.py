@@ -35,8 +35,6 @@ class MergedModel:
     @func_timer
     def __get_normal_result(self, item_id):
         result = self.model_tfidf.get_match_items(item_id)
-        dict_filter(lambda x: x > MergedModel.SimilarThreshold, result)
-
         result_ubh = self.model_ubh.get_match_dict(item_id)
         update_data_dict(result, result_ubh)
         return result
@@ -46,6 +44,7 @@ class MergedModel:
         limit_num = MergedModel.LimitNum
 
         input_sim_dict = self.__get_sim_items(item_id)
+        dict_filter(lambda x: x > MergedModel.SimilarThreshold, input_sim_dict)
         input_sim_list = dict2list_sorted_by_value(input_sim_dict)[:limit_num]
         update_data_dict(query_input, input_sim_list)
 
